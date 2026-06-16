@@ -1,0 +1,65 @@
+{
+  "raw_sample_schema": {
+    "description": "Optional upstream schema when the main program owns raw trajectory capture. The Core ML model itself consumes derived features, not raw samples.",
+    "required_tests": [0, 1],
+    "sample_fields": [
+      {
+        "name": "x",
+        "type": "Double",
+        "unit": "digitizer/logical coordinate unit",
+        "training_observed_range": [-5, 1007],
+        "required": true
+      },
+      {
+        "name": "y",
+        "type": "Double",
+        "unit": "digitizer/logical coordinate unit",
+        "training_observed_range": [-15, 569],
+        "required": true
+      },
+      {
+        "name": "z",
+        "type": "Double",
+        "unit": "digitizer Z/height channel, 0-1023 scale in training data",
+        "training_observed_range": [0, 1023],
+        "required": true,
+        "note": "If unavailable for the whole deployment platform, retrain an ipad-compatible/no-Z model instead of filling 0."
+      },
+      {
+        "name": "pressure",
+        "type": "Double",
+        "unit": "0-1023 pressure scale",
+        "training_observed_range": [0, 1023],
+        "required": true
+      },
+      {
+        "name": "grip_angle",
+        "type": "Double",
+        "unit": "tenths of degree",
+        "training_observed_range": [0, 3580],
+        "required": true
+      },
+      {
+        "name": "timestamp",
+        "type": "Double",
+        "unit": "milliseconds; absolute origin does not matter",
+        "typical_delta_ms": [7, 9],
+        "required": true
+      },
+      {
+        "name": "test_id",
+        "type": "Int",
+        "unit": "0=static spiral, 1=dynamic spiral",
+        "allowed_values_for_this_model": [0, 1],
+        "required": true
+      }
+    ],
+    "derived_feature_contract": {
+      "coreml_input_name": "features",
+      "dtype": "Float32",
+      "shape": [72],
+      "feature_order_file": "feature_schema.json",
+      "missing_value": "Float.nan"
+    }
+  }
+}

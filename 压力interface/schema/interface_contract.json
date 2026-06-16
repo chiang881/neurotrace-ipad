@@ -1,0 +1,34 @@
+{
+  "model_name": "ParkinsonXGBoostV2AllCommon",
+  "model_file": "model/ParkinsonXGBoostV2AllCommon.mlmodel",
+  "coreml_input": {
+    "name": "features",
+    "type": "MLMultiArray",
+    "dtype": "Float32",
+    "shape": [
+      72
+    ]
+  },
+  "coreml_outputs": [
+    {
+      "name": "classLabel",
+      "type": "Int64",
+      "meaning": "0=control pattern, 1=Parkinson pattern"
+    },
+    {
+      "name": "classProbability",
+      "type": "Dictionary<Int64, Double>",
+      "meaning": "probability by class label"
+    }
+  ],
+  "feature_count": 72,
+  "feature_order_source": "schema/feature_schema.json and schema/feature_ranges.csv",
+  "required_tests": [
+    0,
+    1
+  ],
+  "target_resampling_hz": 110.0,
+  "missing_rule": "If a required feature cannot be computed, pass Float.nan, not 0. Core ML routes NaN through XGBoost learned missing branches.",
+  "training_scope": "77 subjects: 15 controls, 62 Parkinson; all-common uses tests 0 and 1 only.",
+  "medical_warning": "Research screening model only. Labels are diagnosed Parkinson's disease versus healthy control, not early-stage disease. The all cohort contains a PD-only second acquisition batch and is vulnerable to acquisition-batch confounding."
+}

@@ -1,0 +1,29 @@
+{
+  "evaluation": "leave-one-subject-out cross-validation",
+  "decision_threshold": 0.45,
+  "subjects": 40,
+  "healthy_subjects": 15,
+  "parkinson_subjects": 25,
+  "accuracy": 0.825,
+  "balanced_accuracy": 0.8066666666666666,
+  "roc_auc": 0.8746666666666667,
+  "sensitivity_recall": 0.88,
+  "specificity": 0.7333333333333333,
+  "precision": 0.8461538461538461,
+  "f1": 0.8627450980392157,
+  "confusion_matrix": {
+    "true_healthy_predicted_healthy": 11,
+    "true_healthy_predicted_parkinson": 4,
+    "true_parkinson_predicted_healthy": 3,
+    "true_parkinson_predicted_parkinson": 22
+  },
+  "caveat": "Development estimate from 40 subjects. Hyperparameters and the operating threshold were developed on this local cohort, so an independent external validation is required.",
+  "robustness_check": {
+    "evaluation": "repeated stratified 5-fold (10 repeats)",
+    "folds": 50,
+    "roc_auc_mean": 0.8486666666666668,
+    "roc_auc_std": 0.13152270610895375,
+    "balanced_accuracy_mean": 0.7546666666666667,
+    "balanced_accuracy_std": 0.137236211612598
+  }
+}
