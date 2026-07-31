@@ -136,11 +136,12 @@ jobs:
             gh release edit "${RELEASE_TAG}" \
               --title "羊皮纸 Mac 预览版 ${RELEASE_VERSION}" \
               --notes-file "${notes_file}" \
-              --prerelease
+              --prerelease=false \
+              --latest
           else
             gh release create "${RELEASE_TAG}" release-artifacts/* \
               --target "${GITHUB_SHA}" \
               --title "羊皮纸 Mac 预览版 ${RELEASE_VERSION}" \
               --notes-file "${notes_file}" \
-              --prerelease
+              --latest
           fi
