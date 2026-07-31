@@ -1,0 +1,13 @@
+{
+  "sample_count": 77,
+  "max_absolute_probability_error": 1.3022437661547315e-07,
+  "mean_absolute_probability_error": 3.510215723627492e-08,
+  "prediction_tolerance": 1e-05,
+  "passed": true,
+  "model_file": "/Users/jiangzongji/Desktop/main/帕金森models/压力model/artifacts/coreml_xgboost_v2_all_common/ParkinsonXGBoostV2AllCommon.mlmodel",
+  "model_size_bytes": 22443,
+  "feature_count": 72,
+  "coreml_specification_version": 1,
+  "tree_count": 180,
+  "input_dtype": "Float32"
+}

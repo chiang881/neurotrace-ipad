@@ -1,0 +1,95 @@
+{
+  "roc_auc": 0.9494623655913978,
+  "average_precision": 0.9873434390072455,
+  "accuracy": 0.8961038961038961,
+  "balanced_accuracy": 0.8344086021505376,
+  "sensitivity_recall": 0.9354838709677419,
+  "specificity": 0.7333333333333333,
+  "precision": 0.9354838709677419,
+  "f1": 0.9354838709677419,
+  "threshold": 0.5,
+  "tn": 11,
+  "fp": 4,
+  "fn": 4,
+  "tp": 58,
+  "confidence_intervals_95_percent": {
+    "roc_auc": [
+      0.8892821133293003,
+      0.989247311827957
+    ],
+    "average_precision": [
+      0.9703137049937698,
+      0.9978564830544903
+    ],
+    "accuracy": [
+      0.8311688311688312,
+      0.961038961038961
+    ],
+    "balanced_accuracy": [
+      0.7048001012145749,
+      0.9425475985457329
+    ],
+    "sensitivity_recall": [
+      0.8666417910447761,
+      0.9848484848484849
+    ],
+    "specificity": [
+      0.47360681114551084,
+      0.9333333333333333
+    ],
+    "precision": [
+      0.8666666666666667,
+      0.9846153846153847
+    ],
+    "f1": [
+      0.8849557522123894,
+      0.976
+    ]
+  },
+  "model_family": "xgboost_v2",
+  "n_subjects": 77,
+  "n_control": 15,
+  "n_parkinson": 62,
+  "n_features": 72,
+  "cohort": "all",
+  "test_profile": "common",
+  "test_ids": [
+    0,
+    1
+  ],
+  "target_hz": 110.0,
+  "ipad_compatible": false,
+  "dropped_constant_features": [
+    "test0_static_spiral_pen_down_ratio",
+    "test0_static_spiral_pressure_zero_ratio",
+    "test0_static_spiral_z_iqr",
+    "test0_static_spiral_z_median",
+    "test1_dynamic_spiral_pen_down_ratio",
+    "test1_dynamic_spiral_pressure_zero_ratio",
+    "test1_dynamic_spiral_z_iqr",
+    "test1_dynamic_spiral_z_median"
+  ],
+  "excluded_platform_features": [],
+  "selected_params": {
+    "max_depth": 3,
+    "learning_rate": 0.06,
+    "n_estimators": 180,
+    "min_child_weight": 0.5,
+    "subsample": 0.75,
+    "colsample_bytree": 0.65,
+    "reg_alpha": 0.05,
+    "reg_lambda": 0.5,
+    "gamma": 0.0
+  },
+  "cv_size_summary": {
+    "mean_tree_count": 180.0,
+    "mean_node_count": 625.84,
+    "mean_leaf_count": 402.92
+  },
+  "warning": "Research screening model only. Labels are diagnosed Parkinson's disease versus healthy control, not early-stage disease. The all cohort contains a PD-only second acquisition batch and is vulnerable to acquisition-batch confounding.",
+  "final_model_size": {
+    "tree_count": 180,
+    "node_count": 706,
+    "leaf_count": 443
+  }
+}
