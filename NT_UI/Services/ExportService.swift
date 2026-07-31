@@ -22,7 +22,8 @@ final class LocalSessionExporter: SessionExporting {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy_MM_dd_HHmm"
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        let baseName = "羊皮纸_\(safeFileName(subject.code))_\(formatter.string(from: session.createdAt))"
+        let customNameComponent = session.hasCustomName ? "_\(safeFileName(session.displayName))" : ""
+        let baseName = "羊皮纸_\(safeFileName(subject.code))\(customNameComponent)_\(formatter.string(from: session.createdAt))"
 
         let exportRoot = fileManager.temporaryDirectory.appending(
             path: "ParchmentExports/\(UUID().uuidString)",
@@ -115,6 +116,7 @@ final class LocalSessionExporter: SessionExporting {
         )
         let sessionExport = SessionExport(
             id: session.id,
+            recordName: session.displayName,
             state: session.state.title,
             mode: session.mode.rawValue,
             createdAt: session.createdAt,
@@ -174,6 +176,7 @@ final class LocalSessionExporter: SessionExporting {
     private func testSummary(_ session: TestSession) -> [String: AnyCodableValue] {
         var summary: [String: AnyCodableValue] = [
             "sessionId": .string(session.id.uuidString),
+            "recordName": .string(session.displayName),
             "state": .string(session.state.title),
             "completedTaskCount": .number(Double(session.completedTaskCount)),
             "taskCount": .number(Double(session.tasks.count))
@@ -245,7 +248,7 @@ final class LocalSessionExporter: SessionExporting {
             if !task.largeModelResults.isEmpty {
                 lines.append("- 大模型：")
                 for result in task.largeModelResults {
-                    lines.append("  - \(result.kind.rawValue) \(result.modelName)：\(result.errorMessage ?? result.summary)")
+                    lines.append("  - \(result.userFacingTitle)：\(result.errorMessage ?? result.summary)")
                 }
             }
         }

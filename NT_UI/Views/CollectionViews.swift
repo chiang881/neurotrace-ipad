@@ -198,6 +198,16 @@ struct NewSessionView: View {
 struct SessionRow: View {
     let session: TestSession
 
+    private var subtitle: String {
+        var components: [String] = []
+        if session.hasCustomName {
+            components.append(session.subject?.code ?? "未知受试者")
+        }
+        components.append(session.mode.rawValue)
+        components.append(session.createdAt.formatted(date: .abbreviated, time: .shortened))
+        return components.joined(separator: " · ")
+    }
+
     var body: some View {
         HStack(spacing: 18) {
             GlassIcon(
@@ -205,10 +215,10 @@ struct SessionRow: View {
                 tint: session.state == .completed ? .mint : .cyan
             )
             VStack(alignment: .leading, spacing: 6) {
-                Text(session.subject?.code ?? "未知受试者")
+                Text(session.displayName)
                     .font(.title3.bold())
                     .foregroundStyle(.white)
-                Text("\(session.mode.rawValue) · \(session.createdAt.formatted(date: .abbreviated, time: .shortened))")
+                Text(subtitle)
                     .foregroundStyle(.white.opacity(0.62))
                 ProgressView(value: session.progress)
                     .tint(session.state == .completed ? .mint : .cyan)
@@ -252,6 +262,7 @@ struct SessionDetailView: View {
     @State private var exportURL: URL?
     @State private var isExporting = false
     @State private var isAnalyzing = false
+    @State private var isRenaming = false
     @State private var errorMessage: String?
     @State private var presentedRoute: Route?
 
@@ -286,7 +297,7 @@ struct SessionDetailView: View {
             }
             .scrollIndicators(.hidden)
         }
-        .navigationTitle(session.subject?.code ?? "测试")
+        .navigationTitle(session.displayName)
         .accessibilityIdentifier("session.detail")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(item: $presentedRoute) { route in
@@ -303,6 +314,10 @@ struct SessionDetailView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                Button("重命名", systemImage: "pencil") {
+                    isRenaming = true
+                }
+
                 if session.state == .completed {
                     Button(analysisIsRunning ? "评估中" : "重新评估", systemImage: "arrow.clockwise.circle") {
                         Task { await analyze(force: true) }
@@ -326,6 +341,9 @@ struct SessionDetailView: View {
             set: { exportURL = $0?.url }
         )) { item in
             ActivityView(activityItems: [item.url])
+        }
+        .sheet(isPresented: $isRenaming) {
+            SessionRenameView(session: session)
         }
         .alert("确认放弃测试？", isPresented: $showAbandonConfirmation) {
             Button("取消", role: .cancel) {}
@@ -442,8 +460,8 @@ struct SessionDetailView: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
                     ScreenTitle(
-                        title: session.subject?.code ?? "未知受试者",
-                        subtitle: "\(session.mode.rawValue) · \(session.createdAt.formatted(date: .complete, time: .shortened))"
+                        title: session.displayName,
+                        subtitle: sessionDetailSubtitle
                     )
                     Spacer()
                     StatusPill(
@@ -457,6 +475,16 @@ struct SessionDetailView: View {
                     .foregroundStyle(.white.opacity(0.64))
             }
         }
+    }
+
+    private var sessionDetailSubtitle: String {
+        var components: [String] = []
+        if session.hasCustomName {
+            components.append(session.subject?.code ?? "未知受试者")
+        }
+        components.append(session.mode.rawValue)
+        components.append(session.createdAt.formatted(date: .complete, time: .shortened))
+        return components.joined(separator: " · ")
     }
 
     private func continueCurrentTaskCard(_ task: TaskRecord) -> some View {

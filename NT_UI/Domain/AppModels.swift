@@ -157,6 +157,7 @@ final class Subject {
 @Model
 final class TestSession {
     @Attribute(.unique) var id: UUID
+    var customName: String?
     var modeRawValue: String
     var stateRawValue: String
     var createdAt: Date
@@ -185,6 +186,7 @@ final class TestSession {
     ) {
         self.id = id
         self.subject = subject
+        customName = nil
         modeRawValue = mode.rawValue
         stateRawValue = state.rawValue
         self.createdAt = createdAt
@@ -204,6 +206,20 @@ final class TestSession {
     var state: SessionState {
         get { SessionState(rawValue: stateRawValue) ?? .ready }
         set { stateRawValue = newValue.rawValue }
+    }
+
+    var displayName: String {
+        normalizedCustomName ?? subject?.code ?? "未知受试者"
+    }
+
+    var hasCustomName: Bool {
+        normalizedCustomName != nil
+    }
+
+    private var normalizedCustomName: String? {
+        guard let customName else { return nil }
+        let trimmed = customName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     var orderedTasks: [TaskRecord] {

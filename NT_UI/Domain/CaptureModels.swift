@@ -183,6 +183,7 @@ nonisolated struct SubjectExport: Codable {
 
 nonisolated struct SessionExport: Codable {
     let id: UUID
+    let recordName: String
     let state: String
     let mode: String
     let createdAt: Date

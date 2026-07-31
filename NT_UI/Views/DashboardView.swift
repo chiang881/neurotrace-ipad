@@ -152,10 +152,10 @@ struct DashboardView: View {
                             .foregroundStyle(.mint)
                         StatusPill(text: session.state.title, color: .mint)
                     }
-                    Text(session.subject?.code ?? "未知受试者")
+                    Text(session.displayName)
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
-                    Text("\(session.completedTaskCount) / \(session.tasks.count) 项已完成 · \(session.mode.rawValue)")
+                    Text(activeSessionSubtitle(session))
                         .foregroundStyle(.white.opacity(0.68))
                     ProgressView(value: session.progress)
                         .tint(.mint)
@@ -174,6 +174,16 @@ struct DashboardView: View {
                 .accessibilityIdentifier("continue.session")
             }
         }
+    }
+
+    private func activeSessionSubtitle(_ session: TestSession) -> String {
+        var components: [String] = []
+        if session.hasCustomName {
+            components.append(session.subject?.code ?? "未知受试者")
+        }
+        components.append("\(session.completedTaskCount) / \(session.tasks.count) 项已完成")
+        components.append(session.mode.rawValue)
+        return components.joined(separator: " · ")
     }
 
     private func actionCard(symbol: String, title: String, subtitle: String, tint: Color) -> some View {

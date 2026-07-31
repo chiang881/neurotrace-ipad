@@ -178,4 +178,8 @@ nonisolated struct LargeModelAnalysisResult: Codable, Identifiable {
         self.rawText = rawText
         self.errorMessage = errorMessage
     }
+
+    var userFacingTitle: String {
+        kind == .image ? kind.rawValue : "\(kind.rawValue) · \(modelName)"
+    }
 }

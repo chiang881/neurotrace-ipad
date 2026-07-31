@@ -29,7 +29,7 @@ struct AnalysisReportSummaryView: View {
 
                 if let result = report.overallLargeModelResult {
                     resultLine(
-                        title: "\(result.kind.rawValue) · \(result.modelName)",
+                        title: result.userFacingTitle,
                         summary: result.errorMessage ?? result.summary,
                         riskScore: result.riskScore
                     )
@@ -98,7 +98,7 @@ struct AnalysisReportSummaryView: View {
 
             ForEach(taskReport.largeModelResults) { result in
                 resultLine(
-                    title: "\(result.kind.rawValue) · \(result.modelName)",
+                    title: result.userFacingTitle,
                     summary: result.errorMessage ?? result.summary,
                     riskScore: result.riskScore
                 )

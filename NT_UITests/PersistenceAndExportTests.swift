@@ -44,6 +44,28 @@ final class PersistenceAndExportTests: XCTestCase {
         ])
     }
 
+    func testSessionDisplayNameCanBeCustomizedAndReset() throws {
+        let container = try inMemoryContainer()
+        let context = ModelContext(container)
+        let subject = Subject(code: "S-NAME")
+        context.insert(subject)
+
+        let services = AppServices(captureStore: LocalCaptureStore(rootURL: temporaryRoot()))
+        let session = try services.createSession(subject: subject, mode: .quick, context: context)
+        XCTAssertEqual(session.displayName, "S-NAME")
+        XCTAssertFalse(session.hasCustomName)
+
+        session.customName = "  晨间基线  "
+        try context.save()
+        let storedSession = try XCTUnwrap(context.fetch(FetchDescriptor<TestSession>()).first)
+        XCTAssertEqual(storedSession.displayName, "晨间基线")
+        XCTAssertTrue(storedSession.hasCustomName)
+
+        storedSession.customName = " \n "
+        XCTAssertEqual(storedSession.displayName, "S-NAME")
+        XCTAssertFalse(storedSession.hasCustomName)
+    }
+
     func testExportContainsRequiredFiles() async throws {
         let container = try inMemoryContainer()
         let context = ModelContext(container)
@@ -53,6 +75,7 @@ final class PersistenceAndExportTests: XCTestCase {
         let store = LocalCaptureStore(rootURL: root)
         let services = AppServices(captureStore: store)
         let session = try services.createSession(subject: subject, mode: .quick, context: context)
+        session.customName = "晨间记录"
 
         for task in session.tasks {
             task.state = .completed
@@ -65,11 +88,26 @@ final class PersistenceAndExportTests: XCTestCase {
             overallRiskScore: 42,
             summary: "测试报告",
             warnings: ["仅用于测试"],
-            taskReports: []
+            taskReports: [
+                TaskAnalysisReport(
+                    taskKind: .spiralDynamic,
+                    title: "动态螺旋",
+                    hand: "右手",
+                    largeModelResults: [
+                        LargeModelAnalysisResult(
+                            kind: .image,
+                            modelName: "secret-image-model",
+                            promptFocus: "测试",
+                            summary: "图像结果"
+                        )
+                    ]
+                )
+            ]
         )
         try context.save()
 
         let archiveURL = try await services.exportService.export(session: session)
+        XCTAssertTrue(archiveURL.lastPathComponent.contains("晨间记录"))
         let archive = try Archive(url: archiveURL, accessMode: .read)
         let names = Set(archive.map(\.path))
         XCTAssertTrue(names.contains { $0.hasSuffix("manifest.json") })
@@ -89,6 +127,17 @@ final class PersistenceAndExportTests: XCTestCase {
         XCTAssertEqual(manifest.coordinateMapping["x"], "normalizedX * 1000")
         XCTAssertTrue(manifest.zProxyRule.contains("pressure1023 * sin(altitudeAngle)"))
 
+        let sessionData = try extractData(named: "session.json", from: archive)
+        let sessionExport = try JSONDecoder.parchment.decode(SessionExport.self, from: sessionData)
+        XCTAssertEqual(sessionExport.recordName, "晨间记录")
+
+        let reportText = try XCTUnwrap(String(
+            data: extractData(named: "analysis_report.md", from: archive),
+            encoding: .utf8
+        ))
+        XCTAssertTrue(reportText.contains("图像分析：图像结果"))
+        XCTAssertFalse(reportText.contains("secret-image-model"))
+
         let summaryText = try XCTUnwrap(String(
             data: extractData(named: "test_summary.json", from: archive),
             encoding: .utf8
@@ -96,6 +145,7 @@ final class PersistenceAndExportTests: XCTestCase {
         XCTAssertTrue(summaryText.contains("spiralModelVersion"))
         XCTAssertTrue(summaryText.contains("pressureSchemaVersion"))
         XCTAssertTrue(summaryText.contains("zProxyRule"))
+        XCTAssertTrue(summaryText.contains("晨间记录"))
     }
 
     func testLargeModelBaseEndpointIsExpanded() throws {
