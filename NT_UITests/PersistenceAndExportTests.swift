@@ -25,6 +25,25 @@ final class PersistenceAndExportTests: XCTestCase {
         XCTAssertEqual(session.state, .inProgress)
     }
 
+    func testQuickSessionUsesSubjectDominantHand() throws {
+        let container = try inMemoryContainer()
+        let context = ModelContext(container)
+        let subject = Subject(code: "S-LEFT", dominantHand: .left)
+        context.insert(subject)
+
+        let services = AppServices(captureStore: LocalCaptureStore(rootURL: temporaryRoot()))
+        let session = try services.createSession(subject: subject, mode: .quick, context: context)
+
+        XCTAssertEqual(session.orderedTasks.map(\.taskKind), [
+            .spiralDynamic,
+            .holdLeft,
+            .tappingLeft,
+            .waveTracing,
+            .circleTracing,
+            .clockCommand
+        ])
+    }
+
     func testExportContainsRequiredFiles() async throws {
         let container = try inMemoryContainer()
         let context = ModelContext(container)
@@ -95,6 +114,20 @@ final class PersistenceAndExportTests: XCTestCase {
             try client.resolvedModelsEndpointURL().absoluteString,
             "https://www.right.codes/codex/v1/models"
         )
+    }
+
+    func testLargeModelConfigurationRejectsRelativeAndUnsupportedEndpoints() {
+        for endpoint in ["api.example.com/v1", "file:///tmp/model", "ftp://example.com/v1"] {
+            let configuration = LargeModelConfiguration(
+                isEnabled: true,
+                endpoint: endpoint,
+                apiKey: "",
+                model: "test-model"
+            )
+
+            XCTAssertFalse(configuration.isReady, endpoint)
+            XCTAssertNil(configuration.endpointURL, endpoint)
+        }
     }
 
     private func inMemoryContainer() throws -> ModelContainer {

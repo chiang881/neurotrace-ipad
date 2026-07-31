@@ -10,14 +10,12 @@ struct MoreView: View {
     @State private var diagnosticMessage: String?
     @State private var modelIDs: [String] = []
 
-    private var endpointIsValid: Bool {
-        URL(string: endpoint) != nil
+    private var configurationIsReady: Bool {
+        currentConfiguration.isReady
     }
 
-    private var configurationIsReady: Bool {
-        largeModelEnabled
-            && endpointIsValid
-            && !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    private var endpointIsValid: Bool {
+        currentConfiguration.endpointURL != nil
     }
 
     private var currentConfiguration: LargeModelConfiguration {
@@ -159,7 +157,7 @@ struct MoreView: View {
                     SectionTitle("分析说明")
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12) {
-                            Label("本地模型：螺旋任务调用螺旋 Core ML 模型；静止保持、短句抄写、波浪线和圆形描摹调用压力 Core ML 模型。", systemImage: "cpu")
+                            Label("本地模型：螺旋与压力 Core ML 模型均需要静态、动态螺旋配对输入；快速模式不含静态螺旋，因此不执行本地模型推理。", systemImage: "cpu")
                             Label("大模型：测试结束后会把已有预览图逐项发送到配置的 API；触屏敲击会发送结构化特征。", systemImage: "photo.on.rectangle.angled")
                             Label("报告：记录每项模型结果；最终研究关注分数优先由大模型 overall 综合分析给出，可随 ZIP 一起导出。", systemImage: "doc.text.magnifyingglass")
                             Label("所有输出均为研究辅助信息，不作为医学诊断。", systemImage: "exclamationmark.triangle")

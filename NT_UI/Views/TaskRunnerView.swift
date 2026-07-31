@@ -103,10 +103,14 @@ struct TaskRunnerView: View {
                 title: definition.interaction == .tapping ? "点击事件" : "采集点",
                 value: "\(definition.interaction == .tapping ? taps.count : samples.count)"
             )
-            StatusPill(
-                text: services.pencilMonitor.hasDetectedPencil ? "已检测 Pencil" : "未检测 Pencil",
-                color: services.pencilMonitor.hasDetectedPencil ? .mint : .orange
-            )
+            if definition.interaction == .tapping {
+                StatusPill(text: "手指触屏", color: .cyan)
+            } else {
+                StatusPill(
+                    text: services.pencilMonitor.hasDetectedPencil ? "已检测 Pencil" : "未检测 Pencil",
+                    color: services.pencilMonitor.hasDetectedPencil ? .mint : .orange
+                )
+            }
         }
         .padding(.top, 8)
     }
@@ -393,8 +397,24 @@ struct TaskRunnerView: View {
         if let recordingStartTime {
             elapsed = ProcessInfo.processInfo.systemUptime - recordingStartTime
         }
+        guard canFinish else {
+            let activeWriter = writer
+            writer = nil
+            recordingStartTime = nil
+            task.state = .needsRedo
+            session.updatedAt = .now
+            try? modelContext.save()
+            phase = .ready
+            errorMessage = definition.interaction == .tapping
+                ? "本次未记录到有效点击，请确认使用手指点击目标后重试。"
+                : "本次未记录到足够的 Apple Pencil 数据，请确认笔尖接触画布后重试。"
+            Task { try? await activeWriter?.close() }
+            return
+        }
         phase = .review
-        Task { try? await writer?.close() }
+        let activeWriter = writer
+        writer = nil
+        Task { try? await activeWriter?.close() }
     }
 
     private func receive(samples newSamples: [PencilSample]) {

@@ -83,7 +83,10 @@ final class AppServices {
             deviceModel: UIDevice.current.model
         )
         context.insert(session)
-        for (index, definition) in TaskCatalog.tasks(for: mode).enumerated() {
+        for (index, definition) in TaskCatalog.tasks(
+            for: mode,
+            dominantHand: subject.dominantHand
+        ).enumerated() {
             let record = TaskRecord(taskKind: definition.kind, orderIndex: index)
             record.session = session
             session.tasks.append(record)

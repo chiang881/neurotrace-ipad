@@ -38,7 +38,7 @@ nonisolated enum TestMode: String, Codable, CaseIterable, Identifiable {
 
     var estimatedDuration: String {
         switch self {
-        case .quick: "约 3–5 分钟"
+        case .quick: "约 4–6 分钟"
         case .full: "约 8–12 分钟"
         }
     }

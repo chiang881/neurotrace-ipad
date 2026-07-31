@@ -31,9 +31,20 @@ nonisolated struct LargeModelConfiguration {
         endpoint.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    var endpointURL: URL? {
+        guard
+            let components = URLComponents(string: trimmedEndpoint),
+            let scheme = components.scheme?.lowercased(),
+            scheme == "https" || scheme == "http",
+            let host = components.host,
+            !host.isEmpty
+        else { return nil }
+        return components.url
+    }
+
     var isReady: Bool {
         isEnabled
-            && URL(string: trimmedEndpoint) != nil
+            && endpointURL != nil
             && !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
@@ -182,7 +193,7 @@ nonisolated struct LargeModelClient {
     }
 
     func resolvedChatCompletionsEndpointURL() throws -> URL {
-        guard var url = URL(string: configuration.trimmedEndpoint) else {
+        guard var url = configuration.endpointURL else {
             throw LargeModelClientError.invalidEndpoint
         }
         if url.lastPathComponent == "completions",
@@ -196,7 +207,7 @@ nonisolated struct LargeModelClient {
     }
 
     func resolvedModelsEndpointURL() throws -> URL {
-        guard var url = URL(string: configuration.trimmedEndpoint) else {
+        guard var url = configuration.endpointURL else {
             throw LargeModelClientError.invalidEndpoint
         }
         if url.lastPathComponent == "models" {

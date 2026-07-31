@@ -57,7 +57,11 @@ private actor SessionAnalysisRunner {
             message: "正在准备评估数据..."
         )
 
-        appendLocalModelResults(contexts: contexts, reports: &reports)
+        appendLocalModelResults(
+            contexts: contexts,
+            reports: &reports,
+            warnings: &warnings
+        )
         await appendLargeModelResults(
             contexts: contexts,
             reports: &reports,
@@ -162,11 +166,18 @@ private actor SessionAnalysisRunner {
 
     private func appendLocalModelResults(
         contexts: [AnalysisTaskInput],
-        reports: inout [TaskAnalysisReport]
+        reports: inout [TaskAnalysisReport],
+        warnings: inout [String]
     ) {
+        let containsSpiralTask = contexts.contains {
+            $0.definition.kind == .spiralStatic || $0.definition.kind == .spiralDynamic
+        }
         let spiralStatic = contexts.first { $0.definition.kind == .spiralStatic }?.samples ?? []
         let spiralDynamic = contexts.first { $0.definition.kind == .spiralDynamic }?.samples ?? []
         guard !spiralStatic.isEmpty, !spiralDynamic.isEmpty else {
+            if containsSpiralTask {
+                warnings.append("本地螺旋与压力模型需要静态、动态螺旋配对输入；本次协议未提供完整配对，未执行本地模型推理。")
+            }
             return
         }
 

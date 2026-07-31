@@ -80,7 +80,7 @@ struct CollectionRootView: View {
     private var protocolCard: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: 14) {
-                Label("快速模式：静态/动态螺旋、静止保持、触屏敲击，共 6 项", systemImage: "hare.fill")
+                Label("快速模式：动态螺旋、静止保持（单手）、触屏敲击（单手）、波浪线描摹、圆形描摹、数字画钟（自由绘制），共 6 项", systemImage: "hare.fill")
                 Label("完整模式：全部 11 项任务", systemImage: "list.number")
                 Label("任务固定顺序，不允许跳过；可重做或中断续测", systemImage: "arrow.clockwise")
                 Label("绘图只采集 Apple Pencil；模拟器输入会写入质量标记", systemImage: "pencil.tip")
@@ -99,6 +99,16 @@ struct NewSessionView: View {
     @State private var selectedSubjectID: UUID?
     @State private var mode: TestMode = .full
     @State private var errorMessage: String?
+
+    private var selectedSubject: Subject? {
+        subjects.first { $0.id == selectedSubjectID }
+    }
+
+    private var quickHandDescription: String {
+        let dominantHand = selectedSubject?.dominantHand ?? .unspecified
+        let hand = TaskCatalog.singleHand(for: dominantHand).rawValue
+        return dominantHand == .left || dominantHand == .right ? hand : "\(hand)（默认）"
+    }
 
     var body: some View {
         NavigationStack {
@@ -121,7 +131,7 @@ struct NewSessionView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(option.rawValue)
                                         .font(.headline)
-                                    Text(option == .quick ? "静态/动态螺旋、静止保持、触屏敲击" : "完整 11 项研究任务")
+                                    Text(option == .quick ? "动态螺旋、单手保持/敲击、波浪线/圆形描摹、数字画钟（自由绘制）" : "完整 11 项研究任务")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                 }
@@ -138,7 +148,13 @@ struct NewSessionView: View {
                 }
 
                 Section("本次测试") {
-                    LabeledContent("任务数量", value: "\(TaskCatalog.tasks(for: mode).count)")
+                    LabeledContent(
+                        "任务数量",
+                        value: "\(TaskCatalog.tasks(for: mode, dominantHand: selectedSubject?.dominantHand ?? .unspecified).count)"
+                    )
+                    if mode == .quick {
+                        LabeledContent("单手任务用手", value: quickHandDescription)
+                    }
                     LabeledContent("创建时间", value: Date.now.formatted(date: .numeric, time: .shortened))
                 }
 

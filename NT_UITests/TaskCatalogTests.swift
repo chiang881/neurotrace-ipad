@@ -3,15 +3,32 @@ import XCTest
 @testable import NT_UI
 
 final class TaskCatalogTests: XCTestCase {
-    func testQuickModeContainsFixedSixV2Tasks() {
+    func testQuickModeContainsRequestedSixTasksUsingRightHandByDefault() {
         XCTAssertEqual(
             TaskCatalog.tasks(for: .quick).map(\.kind),
             [
-                .spiralStatic, .spiralDynamic,
-                .holdRight, .holdLeft,
-                .tappingRight, .tappingLeft
+                .spiralDynamic,
+                .holdRight,
+                .tappingRight,
+                .waveTracing,
+                .circleTracing,
+                .clockCommand
             ]
         )
+    }
+
+    func testQuickModeUsesLeftHandForLeftHandedSubject() {
+        let tasks = TaskCatalog.tasks(for: .quick, dominantHand: .left)
+
+        XCTAssertEqual(tasks.map(\.kind), [
+            .spiralDynamic,
+            .holdLeft,
+            .tappingLeft,
+            .waveTracing,
+            .circleTracing,
+            .clockCommand
+        ])
+        XCTAssertEqual(tasks.filter { $0.hand != .none }.map(\.hand), [.left, .left])
     }
 
     func testFullModeContainsAllElevenTasksInProtocolOrder() {

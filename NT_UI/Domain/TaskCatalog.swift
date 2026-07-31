@@ -33,7 +33,7 @@ nonisolated struct ResearchTaskDefinition: Identifiable {
 nonisolated enum TaskCatalog {
     static let all: [ResearchTaskDefinition] = [
         .init(kind: .spiralStatic, title: "静态螺旋", instruction: "请沿灰色螺旋线缓慢描摹，尽量保持连续。", hand: .none, interaction: .drawing, template: .spiral, fixedDuration: nil),
-        .init(kind: .spiralDynamic, title: "动态螺旋", instruction: "请在画布中心自由画出同样形态的螺旋。", hand: .none, interaction: .drawing, template: .none, fixedDuration: nil),
+        .init(kind: .spiralDynamic, title: "动态螺旋", instruction: "请从画布中心向外连续画一个螺旋。", hand: .none, interaction: .drawing, template: .none, fixedDuration: nil),
         .init(kind: .holdRight, title: "静止保持", instruction: "请使用右手，将笔尖放在中心圆点并尽量保持不动。", hand: .right, interaction: .hold, template: .holdTarget, fixedDuration: 10),
         .init(kind: .holdLeft, title: "静止保持", instruction: "请使用左手，将笔尖放在中心圆点并尽量保持不动。", hand: .left, interaction: .hold, template: .holdTarget, fixedDuration: 10),
         .init(kind: .tappingRight, title: "触屏敲击", instruction: "请使用右手的两根手指交替点击左右圆点。", hand: .right, interaction: .tapping, template: .none, fixedDuration: 20),
@@ -41,7 +41,7 @@ nonisolated enum TaskCatalog {
         .init(kind: .sentenceCopying, title: "短句抄写", instruction: "请抄写：Today is a sunny day.", hand: .none, interaction: .drawing, template: .sentence, fixedDuration: nil),
         .init(kind: .waveTracing, title: "波浪线描摹", instruction: "请沿灰色波浪线从左向右描摹。", hand: .none, interaction: .drawing, template: .wave, fixedDuration: nil),
         .init(kind: .circleTracing, title: "圆形描摹", instruction: "请沿灰色圆形描摹一圈。", hand: .none, interaction: .drawing, template: .circle, fixedDuration: nil),
-        .init(kind: .clockCommand, title: "数字画钟 · 自由绘制", instruction: "请画一个钟表，时间显示为 11 点 10 分。", hand: .none, interaction: .drawing, template: .none, fixedDuration: nil),
+        .init(kind: .clockCommand, title: "数字画钟（自由绘制）", instruction: "请画一个钟表，时间显示为 11 点 10 分。", hand: .none, interaction: .drawing, template: .none, fixedDuration: nil),
         .init(kind: .clockCopy, title: "数字画钟 · 模板复制", instruction: "请在右侧复制左侧钟表，时间为 11 点 10 分。", hand: .none, interaction: .drawing, template: .clockReference, fixedDuration: nil)
     ]
 
@@ -50,13 +50,31 @@ nonisolated enum TaskCatalog {
         .init(kind: .spiralLeft, title: "螺旋描摹", instruction: "请使用左手，沿灰色螺旋线缓慢描摹。", hand: .left, interaction: .drawing, template: .spiral, fixedDuration: nil)
     ]
 
-    static func tasks(for mode: TestMode) -> [ResearchTaskDefinition] {
+    static func tasks(
+        for mode: TestMode,
+        dominantHand: DominantHand = .unspecified
+    ) -> [ResearchTaskDefinition] {
         switch mode {
         case .quick:
-            Array(all.prefix(6))
+            let hand = singleHand(for: dominantHand)
+            let holdKind: ResearchTaskKind = hand == .left ? .holdLeft : .holdRight
+            let tappingKind: ResearchTaskKind = hand == .left ? .tappingLeft : .tappingRight
+            return [
+                .spiralDynamic,
+                holdKind,
+                tappingKind,
+                .waveTracing,
+                .circleTracing,
+                .clockCommand
+            ].map(definition(for:))
         case .full:
-            all
+            return all
         }
+    }
+
+    /// 快速模式只采集一只手；双手或未填写时使用右手，保证任务协议可直接执行。
+    static func singleHand(for dominantHand: DominantHand) -> TestHand {
+        dominantHand == .left ? .left : .right
     }
 
     static func definition(for kind: ResearchTaskKind) -> ResearchTaskDefinition {
