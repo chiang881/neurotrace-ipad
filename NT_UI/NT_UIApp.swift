@@ -1,46 +1,53 @@
-//
-//  NT_UIApp.swift
-//  NT_UI
-//
-//  Created by 蒋棕基 on 2026/5/27.
-//
-
-import SwiftData
-import SwiftUI
+import UIKit
+import OSLog
 
 @main
-struct NT_UIApp: App {
-    private let modelContainer: ModelContainer
-    @State private var services = AppServices()
+final class AppDelegate: UIResponder, UIApplicationDelegate {
+    private let logger = Logger(subsystem: "top.hadal.NT-UI", category: "Lifecycle")
 
-    init() {
-        let schema = Schema([
-            Subject.self,
-            TestSession.self,
-            TaskRecord.self
-        ])
-        let configuration = ModelConfiguration(
-            "Parchment",
-            schema: schema,
-            allowsSave: true,
-            groupContainer: .none,
-            cloudKitDatabase: .none
-        )
-        do {
-            modelContainer = try ModelContainer(
-                for: schema,
-                configurations: [configuration]
-            )
-        } catch {
-            fatalError("无法创建羊皮纸数据库：\(error)")
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        let staleSessions = application.openSessions.filter { session in
+            session.configuration.delegateClass != SceneDelegate.self
         }
+        logger.notice(
+            "UIKit application delegate launched; stale scenes: \(staleSessions.count, privacy: .public)"
+        )
+
+        // A scene session created by the former SwiftUI lifecycle can survive an
+        // app update and reconnect to SwiftUI's private scene delegate. That
+        // leaves the UIKit rewrite with no window and produces a black screen.
+        // Create the replacement first, then retire only those legacy sessions.
+        if !staleSessions.isEmpty {
+            application.requestSceneSessionActivation(
+                nil,
+                userActivity: nil,
+                options: nil
+            ) { [logger] error in
+                logger.error("Unable to activate replacement UIKit scene: \(error.localizedDescription, privacy: .public)")
+            }
+            staleSessions.forEach { session in
+                application.requestSceneSessionDestruction(session, options: nil) { [logger] error in
+                    logger.error("Unable to discard legacy scene: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        }
+        return true
     }
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(services)
-        }
-        .modelContainer(modelContainer)
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        logger.notice("Creating UIKit scene configuration")
+        let configuration = UISceneConfiguration(
+            name: "Parchment UIKit 2",
+            sessionRole: connectingSceneSession.role
+        )
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
     }
 }

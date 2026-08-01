@@ -1,34 +1,4 @@
-import SwiftUI
 import UIKit
-
-struct PencilCanvasView: UIViewRepresentable {
-    let taskID: UUID
-    let isRecording: Bool
-    let resetToken: UUID
-    let pencilMonitor: PencilMonitor
-    let onSamples: @MainActor ([PencilSample]) -> Void
-    let onSampleUpdates: @MainActor ([PencilSample]) -> Void
-
-    func makeUIView(context: Context) -> PencilCaptureUIView {
-        let view = PencilCaptureUIView()
-        view.taskID = taskID
-        view.onSamples = onSamples
-        view.onSampleUpdates = onSampleUpdates
-        view.onPencilDetection = { source in
-            pencilMonitor.record(source)
-        }
-        return view
-    }
-
-    func updateUIView(_ uiView: PencilCaptureUIView, context: Context) {
-        uiView.taskID = taskID
-        uiView.isRecording = isRecording
-        if uiView.resetToken != resetToken {
-            uiView.resetToken = resetToken
-            uiView.reset()
-        }
-    }
-}
 
 @MainActor
 final class PencilCaptureUIView: UIView, UIPencilInteractionDelegate {
@@ -51,6 +21,10 @@ final class PencilCaptureUIView: UIView, UIPencilInteractionDelegate {
         isOpaque = false
         isMultipleTouchEnabled = false
         addInteraction(UIPencilInteraction(delegate: self))
+        let hover = UIHoverGestureRecognizer(target: self, action: #selector(handlePencilHover(_:)))
+        hover.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+        hover.cancelsTouchesInView = false
+        addGestureRecognizer(hover)
     }
 
     required init?(coder: NSCoder) {
@@ -146,9 +120,14 @@ final class PencilCaptureUIView: UIView, UIPencilInteractionDelegate {
         onPencilDetection?(.squeeze)
     }
 
+    @objc private func handlePencilHover(_ recognizer: UIHoverGestureRecognizer) {
+        guard recognizer.state == .began || recognizer.state == .changed else { return }
+        onPencilDetection?(.hover)
+    }
+
     override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
-        context.setStrokeColor(UIColor(red: 0.18, green: 0.12, blue: 0.08, alpha: 1).cgColor)
+        context.setStrokeColor(UIColor.label.cgColor)
         context.setLineCap(.round)
         context.setLineJoin(.round)
 

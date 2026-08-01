@@ -22,7 +22,7 @@ nonisolated struct LargeModelConfiguration {
         LargeModelConfiguration(
             isEnabled: defaults.bool(forKey: LargeModelSettingsKeys.enabled),
             endpoint: defaults.string(forKey: LargeModelSettingsKeys.endpoint) ?? defaultEndpoint,
-            apiKey: defaults.string(forKey: LargeModelSettingsKeys.apiKey) ?? "",
+            apiKey: SecureAPIKeyStore.load(),
             model: defaults.string(forKey: LargeModelSettingsKeys.model) ?? defaultModel
         )
     }

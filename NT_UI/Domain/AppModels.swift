@@ -42,6 +42,15 @@ nonisolated enum TestMode: String, Codable, CaseIterable, Identifiable {
         case .full: "约 8–12 分钟"
         }
     }
+
+    /// The session-wide countdown begins with the first task. Passing zero is
+    /// allowed and displayed as overtime so research collection is never cut off.
+    var overallDuration: TimeInterval {
+        switch self {
+        case .quick: 6 * 60
+        case .full: 12 * 60
+        }
+    }
 }
 
 nonisolated enum SessionState: String, Codable {

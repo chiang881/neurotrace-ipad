@@ -1,14 +1,13 @@
 import CoreGraphics
 import Foundation
-import SwiftUI
 
-nonisolated enum TaskInteractionKind: Equatable {
+nonisolated enum TaskInteractionKind: Equatable, Sendable {
     case drawing
     case hold
     case tapping
 }
 
-nonisolated enum TaskTemplateKind: Equatable {
+nonisolated enum TaskTemplateKind: Equatable, Sendable {
     case none
     case spiral
     case holdTarget
@@ -18,7 +17,7 @@ nonisolated enum TaskTemplateKind: Equatable {
     case clockReference
 }
 
-nonisolated struct ResearchTaskDefinition: Identifiable {
+nonisolated struct ResearchTaskDefinition: Identifiable, Sendable {
     let kind: ResearchTaskKind
     let title: String
     let instruction: String

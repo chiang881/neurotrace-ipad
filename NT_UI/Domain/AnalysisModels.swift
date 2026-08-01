@@ -40,7 +40,7 @@ nonisolated enum LargeModelAnalysisKind: String, Codable {
 }
 
 nonisolated struct SessionAnalysisReport: Codable {
-    static let schemaVersion = "1.0.0"
+    static let schemaVersion = "2.0.0"
 
     var schemaVersion: String
     var generatedAt: Date

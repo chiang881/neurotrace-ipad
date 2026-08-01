@@ -122,6 +122,7 @@ final class PersistenceAndExportTests: XCTestCase {
 
         let manifestData = try extractData(named: "manifest.json", from: archive)
         let manifest = try JSONDecoder.parchment.decode(ExportManifest.self, from: manifestData)
+        XCTAssertEqual(manifest.schemaVersion, "2.0.0")
         XCTAssertEqual(manifest.modelVersions["spiral"], "ParkinsonSpiralXGBV2")
         XCTAssertEqual(manifest.modelVersions["pressure"], "ParkinsonXGBoostV2AllCommon")
         XCTAssertEqual(manifest.coordinateMapping["x"], "normalizedX * 1000")
@@ -130,6 +131,7 @@ final class PersistenceAndExportTests: XCTestCase {
         let sessionData = try extractData(named: "session.json", from: archive)
         let sessionExport = try JSONDecoder.parchment.decode(SessionExport.self, from: sessionData)
         XCTAssertEqual(sessionExport.recordName, "晨间记录")
+        XCTAssertEqual(session.analysisReport?.schemaVersion, "2.0.0")
 
         let reportText = try XCTUnwrap(String(
             data: extractData(named: "analysis_report.md", from: archive),
@@ -178,6 +180,18 @@ final class PersistenceAndExportTests: XCTestCase {
             XCTAssertFalse(configuration.isReady, endpoint)
             XCTAssertNil(configuration.endpointURL, endpoint)
         }
+    }
+
+    func testAPIKeyRoundTripsThroughKeychain() throws {
+        let originalValue = SecureAPIKeyStore.load()
+        defer { try? SecureAPIKeyStore.save(originalValue) }
+        let testValue = "ui-test-\(UUID().uuidString)"
+
+        try SecureAPIKeyStore.save("  \(testValue)  ")
+        XCTAssertEqual(SecureAPIKeyStore.load(), testValue)
+
+        try SecureAPIKeyStore.save("")
+        XCTAssertEqual(SecureAPIKeyStore.load(), "")
     }
 
     private func inMemoryContainer() throws -> ModelContainer {

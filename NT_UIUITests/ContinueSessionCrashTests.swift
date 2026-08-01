@@ -12,22 +12,11 @@ final class ContinueSessionCrashTests: XCTestCase {
         continueButton.tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["screen.数据采集"].waitForExistence(timeout: 4)
-        )
-
-        let sessionRow = app.descendants(matching: .any)["continue.session.row"]
-        XCTAssertTrue(sessionRow.waitForExistence(timeout: 4))
-        sessionRow.tap()
-
-        XCTAssertTrue(
             app.descendants(matching: .any)["session.detail"].waitForExistence(timeout: 4)
         )
-        XCTAssertTrue(
-            app.staticTexts["需要重做"].waitForExistence(timeout: 4)
-        )
-
         let currentTask = app.descendants(matching: .any)["continue.current-task"]
         XCTAssertTrue(currentTask.waitForExistence(timeout: 4))
+        XCTAssertEqual(currentTask.value as? String, "需要重做")
         currentTask.tap()
 
         XCTAssertTrue(

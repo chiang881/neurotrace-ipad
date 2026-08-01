@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000001 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000004 /* ZIPFoundation */; };
 		A20000000000000000000009 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000004 /* ZIPFoundation */; };
+		B10000000000000000000001 /* ParchmentInfrastructure in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000004 /* ParchmentInfrastructure */; };
+		B10000000000000000000002 /* ParchmentUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000005 /* ParchmentUIKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +36,22 @@
 		A30000000000000000000001 /* NT_UIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NT_UIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B20000000000000000000001 /* Exceptions for "NT_UI" folder in "NT_UI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3007CA012FC72C14002BEB72 /* NT_UI */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3007CA042FC72C14002BEB72 /* NT_UI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B20000000000000000000001 /* Exceptions for "NT_UI" folder in "NT_UI" target */,
+			);
 			path = NT_UI;
 			sourceTree = "<group>";
 		};
@@ -58,6 +73,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000001 /* ZIPFoundation in Frameworks */,
+				B10000000000000000000001 /* ParchmentInfrastructure in Frameworks */,
+				B10000000000000000000002 /* ParchmentUIKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +137,8 @@
 			name = NT_UI;
 			packageProductDependencies = (
 				A10000000000000000000004 /* ZIPFoundation */,
+				B10000000000000000000004 /* ParchmentInfrastructure */,
+				B10000000000000000000005 /* ParchmentUIKit */,
 			);
 			productName = NT_UI;
 			productReference = 3007CA022FC72C14002BEB72 /* NT_UI.app */;
@@ -206,6 +225,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A10000000000000000000003 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				B10000000000000000000003 /* XCLocalSwiftPackageReference "ParchmentKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3007CA032FC72C14002BEB72 /* Products */;
@@ -410,13 +430,13 @@
 				DEVELOPMENT_TEAM = B5BC4L2YMA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NT_UI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "羊皮纸";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "用于连接你在大模型配置中填写的本地或内网分析 API。";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -425,12 +445,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "top.hadal.NT-UI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -445,13 +467,13 @@
 				DEVELOPMENT_TEAM = B5BC4L2YMA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NT_UI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "羊皮纸";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "用于连接你在大模型配置中填写的本地或内网分析 API。";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -460,12 +482,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "top.hadal.NT-UI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
@@ -597,6 +621,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		B10000000000000000000003 /* XCLocalSwiftPackageReference "ParchmentKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ParchmentKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		A10000000000000000000003 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -613,6 +644,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A10000000000000000000003 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		B10000000000000000000004 /* ParchmentInfrastructure */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B10000000000000000000003 /* XCLocalSwiftPackageReference "ParchmentKit" */;
+			productName = ParchmentInfrastructure;
+		};
+		B10000000000000000000005 /* ParchmentUIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B10000000000000000000003 /* XCLocalSwiftPackageReference "ParchmentKit" */;
+			productName = ParchmentUIKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

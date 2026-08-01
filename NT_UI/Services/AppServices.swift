@@ -20,13 +20,26 @@ final class PencilMonitor {
     var hasDetectedPencil: Bool { lastDetectedAt != nil }
 
     var statusText: String {
-        hasDetectedPencil ? "本次运行已检测到 Apple Pencil" : "尚未检测到 Apple Pencil"
+        guard let lastDetectedAt, let source else {
+            return "等待 Apple Pencil 悬停、触碰或按键事件"
+        }
+        return "已通过\(source.rawValue)验证 · \(lastDetectedAt.formatted(date: .omitted, time: .shortened))"
     }
 
     func record(_ source: DetectionSource) {
+        let shouldNotify = self.source != source || lastDetectedAt.map {
+            Date.now.timeIntervalSince($0) > 1
+        } ?? true
         lastDetectedAt = .now
         self.source = source
+        if shouldNotify {
+            NotificationCenter.default.post(name: .pencilMonitorDidChange, object: self)
+        }
     }
+}
+
+extension Notification.Name {
+    static let pencilMonitorDidChange = Notification.Name("Parchment.PencilMonitorDidChange")
 }
 
 nonisolated protocol ResearchSyncClient: Sendable {

@@ -1,28 +1,4 @@
-import SwiftUI
 import UIKit
-
-struct TappingPadView: UIViewRepresentable {
-    let taskID: UUID
-    let isRecording: Bool
-    let resetToken: UUID
-    let onTap: @MainActor (TapEvent) -> Void
-
-    func makeUIView(context: Context) -> TappingCaptureUIView {
-        let view = TappingCaptureUIView()
-        view.taskID = taskID
-        view.onTap = onTap
-        return view
-    }
-
-    func updateUIView(_ uiView: TappingCaptureUIView, context: Context) {
-        uiView.taskID = taskID
-        uiView.isRecording = isRecording
-        if uiView.resetToken != resetToken {
-            uiView.resetToken = resetToken
-            uiView.reset()
-        }
-    }
-}
 
 @MainActor
 final class TappingCaptureUIView: UIView {
@@ -103,7 +79,7 @@ final class TappingCaptureUIView: UIView {
             } else if target == expectedTarget && isRecording {
                 color = UIColor.systemCyan.withAlphaComponent(0.92)
             } else {
-                color = UIColor(red: 0.25, green: 0.18, blue: 0.12, alpha: 0.82)
+                color = .tertiaryLabel
             }
             context.setFillColor(color.cgColor)
             context.fillEllipse(in: circle)

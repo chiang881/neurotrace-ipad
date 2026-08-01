@@ -71,7 +71,7 @@ actor LocalCaptureStore: CaptureStore {
             self.rootURL = rootURL
         } else {
             let applicationSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            self.rootURL = applicationSupport.appending(path: "ParchmentData", directoryHint: .isDirectory)
+            self.rootURL = applicationSupport.appending(path: "ParchmentDataV2", directoryHint: .isDirectory)
         }
         try? fileManager.createDirectory(at: self.rootURL, withIntermediateDirectories: true)
     }

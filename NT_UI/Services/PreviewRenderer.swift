@@ -34,7 +34,7 @@ enum PreviewRenderer {
     ) throws -> String {
         let fileManager = FileManager.default
         let root = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appending(path: "ParchmentData", directoryHint: .isDirectory)
+            .appending(path: "ParchmentDataV2", directoryHint: .isDirectory)
         let directory = root.appending(
             path: "sessions/\(sessionID.uuidString)/\(taskID.uuidString)/attempt-\(attempt)",
             directoryHint: .isDirectory

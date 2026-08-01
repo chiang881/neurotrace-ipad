@@ -76,7 +76,7 @@ final class LocalSessionExporter: SessionExporting {
         }
 
         let manifest = ExportManifest(
-            schemaVersion: "1.0.0",
+            schemaVersion: "2.0.0",
             featureAlgorithmVersion: TaskFeatureSet.algorithmVersion,
             exportedAt: .now,
             appVersion: session.appVersion,
