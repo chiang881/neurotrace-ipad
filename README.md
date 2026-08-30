@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/app-icon.png" width="168" alt="羊皮纸 Parchment 图标">
+  <img src="docs/assets/neurotrace-icon.png" width="168" alt="neurotrace 图标">
 </p>
 
-<h1 align="center">羊皮纸 · Parchment</h1>
+<h1 align="center">neurotrace</h1>
 
 <p align="center">
   面向 iPad 与 Apple Pencil 的神经行为手写研究平台<br>
@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Mac-Catalyst-000000?logo=apple&logoColor=white" alt="Mac Catalyst">
   <img src="https://img.shields.io/badge/Core%20ML-on--device-6B57FF" alt="Core ML on-device">
   <img src="https://img.shields.io/badge/status-research%20prototype-orange" alt="Research prototype">
-  <img src="https://img.shields.io/badge/license-not%20declared-lightgrey" alt="License not declared">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22A699" alt="MIT License"></a>
 </p>
 
 > [!CAUTION]
@@ -30,7 +30,7 @@
 
 ## 项目简介
 
-羊皮纸把标准化手写/触控任务、Apple Pencil 高密度采样、端侧机器学习和可审计的数据导出整合在一个 iPad App 中。研究人员可以建立受试者研究编号（建议去标识化），执行快速或完整任务协议，保存原始轨迹与特征，在设备端运行 Core ML 模型，并按需启用兼容 OpenAI API 的多模态模型进行补充分析。
+neurotrace 把标准化手写/触控任务、Apple Pencil 高密度采样、端侧机器学习和可审计的数据导出整合在一个 iPad App 中。研究人员可以建立受试者研究编号（建议去标识化），执行快速或完整任务协议，保存原始轨迹与特征，在设备端运行 Core ML 模型，并按需启用兼容 OpenAI API 的多模态模型进行补充分析。
 
 项目关注的是传统纸笔检查难以保留的动态信息：书写速度与加速度、停顿、曲率、压力变化、笔倾角、频域能量、敲击节律及左右手差异等。这些信号可用于探索震颤、运动迟缓、节律不稳和小写症等帕金森相关运动线索。
 
@@ -91,7 +91,7 @@ flowchart LR
 | `ParkinsonSpiralXGBV2` | 静态 + 动态螺旋，28 特征 | XGBoost 80 棵树，阈值 0.45 | 40 人 LOSO：ROC AUC 0.875，平衡准确率 0.807 | 15 名健康对照 / 25 名 PWP；阈值在同一小队列开发，尚无外部验证 |
 | `ParkinsonXGBoostV2AllCommon` | 静态 + 动态螺旋，72 特征 | XGBoost 180 棵树，阈值 0.50 | 77 人内部结果：ROC AUC 0.949，平衡准确率 0.834 | 队列不平衡且存在采集批次混杂；训练版并非 iPad-compatible |
 
-压力模型训练输入中的 `Z` 与 Apple Pencil 不同。当前 App 使用 `normalizedForce × 1023 × sin(altitudeAngle)` 作为垂直压力 proxy；它**不是原始数字化仪 Z 通道**，跨设备解释必须谨慎。详细说明见[螺旋模型卡](螺旋interface/docs/MODEL_CARD_V2.md)和[压力模型输入规范](压力interface/INPUT_SPEC.md)。
+压力模型训练输入中的 `Z` 与 Apple Pencil 不同。当前 App 使用 `normalizedForce × 1023 × sin(altitudeAngle)` 作为垂直压力 proxy；它**不是原始数字化仪 Z 通道**，跨设备解释必须谨慎。详细说明见[螺旋模型卡](neurotrace-models/spiral/docs/MODEL_CARD_V2.md)和[压力模型输入规范](neurotrace-models/pressure/INPUT_SPEC.md)。
 
 上述指标是开发期内部估计，不代表真实世界、早期或未确诊人群中的筛查性能。训练数据按项目说明来自公开研究数据，但当前仓库尚未给出可审计的数据集名称、DOI/URL 与许可证；正式发布研究结果前应补齐数据来源和使用授权。
 
@@ -124,10 +124,10 @@ App 可连接 OpenAI-compatible `chat/completions` 服务，对任务预览图�
 | 可选云分析 | Foundation Networking、OpenAI-compatible Chat Completions |
 | 安全 | iOS Keychain、文件保护、默认本地存储 |
 | 导出 | Codable、ZIPFoundation 0.9.20、CSV/JSON/PNG/Markdown |
-| 模块化 | 本地 Swift Package `ParchmentKit`：Domain / Application / Infrastructure / UIKit |
+| 模块化 | 本地 Swift Package `NeuroTraceKit`（`neurotrace-kit/`）：Domain / Application / Infrastructure / UIKit |
 | 测试 | XCTest、单元测试、UI 测试、模型契约测试 |
 
-核心依赖方向：`ParchmentDomain → ParchmentApplication → ParchmentInfrastructure / ParchmentUIKit`。Domain 与 Application 不依赖 UIKit；UIKit 模块也不直接依赖 SwiftData、Core ML 或网络层，便于替换基础设施和独立测试。
+核心依赖方向：`NeuroTraceDomain → NeuroTraceApplication → NeuroTraceInfrastructure / NeuroTraceUIKit`。Domain 与 Application 不依赖 UIKit；UIKit 模块也不直接依赖 SwiftData、Core ML 或网络层，便于替换基础设施和独立测试。
 
 ## 开始使用
 
@@ -145,17 +145,17 @@ Mac Catalyst 版本适合界面预览与流程演示，不能替代真实 Apple 
 ```bash
 git clone https://github.com/chiang881/neurotrace-ipad.git
 cd neurotrace-ipad
-open NT_UI.xcodeproj
+open neurotrace.xcodeproj
 ```
 
-在 Xcode 中选择 `NT_UI` scheme、设置自己的 Development Team，并运行到 iPad。Swift Package 依赖会按 `Package.resolved` 自动解析，所需的两个 V2 `.mlmodel` 已随 App target 提供。
+在 Xcode 中选择 `neurotrace` scheme、设置自己的 Development Team，并运行到 iPad。Swift Package 依赖会按 `Package.resolved` 自动解析，所需的两个 V2 `.mlmodel` 已随 App target 提供。
 
 也可以在 Apple Silicon Mac 上从命令行构建模拟器版本：
 
 ```bash
 xcodebuild build \
-  -project NT_UI.xcodeproj \
-  -scheme NT_UI \
+  -project neurotrace.xcodeproj \
+  -scheme neurotrace \
   -destination 'generic/platform=iOS Simulator' \
   ARCHS=arm64 \
   ONLY_ACTIVE_ARCH=YES \
@@ -167,13 +167,13 @@ Apple Silicon Mac 预览包可在 [Releases](https://github.com/chiang881/neurot
 ### 测试
 
 ```bash
-# ParchmentKit 边界与用例测试
-swift test --package-path ParchmentKit
+# NeuroTraceKit 边界与用例测试
+swift test --package-path neurotrace-kit
 
 # App 单元/UI 测试：将占位符替换为本机可用的 iPad 模拟器
 xcodebuild test \
-  -project NT_UI.xcodeproj \
-  -scheme NT_UI \
+  -project neurotrace.xcodeproj \
+  -scheme neurotrace \
   -destination 'platform=iOS Simulator,name=<iPad Simulator>' \
   CODE_SIGNING_ALLOWED=NO
 ```
@@ -182,7 +182,7 @@ xcodebuild test \
 
 ```text
 neurotrace-ipad/
-├── NT_UI/                         # iPad / Mac Catalyst App
+├── neurotrace/                    # iPad / Mac Catalyst App
 │   ├── Application/               # 应用边界协议
 │   ├── Domain/                    # 受试者、会话、采集与分析模型
 │   ├── Infrastructure/            # SwiftData、依赖组装与安全存储
@@ -190,11 +190,11 @@ neurotrace-ipad/
 │   ├── Models/                    # Core ML 模型与本地特征器
 │   ├── Services/                  # 特征、分析、导出和网络服务
 │   └── UIKit/                     # 页面与 Coordinator
-├── ParchmentKit/                  # 可替换边界的本地 Swift Package
-├── NT_UITests/                    # 单元与模型契约测试
-├── NT_UIUITests/                  # UI 与恢复流程测试
-├── 螺旋interface/                 # 28 特征螺旋模型接口与模型卡
-└── 压力interface/                 # 72 特征压力模型契约、范围与指标
+├── neurotrace-kit/                # 可替换边界的本地 Swift Package
+├── neurotrace-models/             # 螺旋与压力模型接口、契约和模型卡
+├── neurotrace-tools/              # 可复现的品牌资产工具
+├── neurotraceTests/               # 单元与模型契约测试
+└── neurotraceUITests/             # UI 与恢复流程测试
 ```
 
 ## 研究与产品路线
@@ -213,7 +213,7 @@ neurotrace-ipad/
 
 ## 许可证
 
-当前仓库尚未声明开源许可证。在许可证文件加入之前，源代码和模型默认不自动授予复制、修改或再分发权利；如需研究合作或复用，请先联系仓库维护者。
+本项目采用 [MIT License](LICENSE)。第三方数据与依赖仍受各自许可证约束；研究与医疗使用还需自行完成伦理、隐私、监管和有效性评估。
 
 ## 致谢
 

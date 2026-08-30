@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/app-icon.png" width="168" alt="Parchment app icon">
+  <img src="docs/assets/neurotrace-icon.png" width="168" alt="neurotrace app icon">
 </p>
 
-<h1 align="center">Parchment · 羊皮纸</h1>
+<h1 align="center">neurotrace</h1>
 
 <p align="center">
   A neurobehavioral handwriting research platform for iPad and Apple Pencil<br>
@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Mac-Catalyst-000000?logo=apple&logoColor=white" alt="Mac Catalyst">
   <img src="https://img.shields.io/badge/Core%20ML-on--device-6B57FF" alt="Core ML on-device">
   <img src="https://img.shields.io/badge/status-research%20prototype-orange" alt="Research prototype">
-  <img src="https://img.shields.io/badge/license-not%20declared-lightgrey" alt="License not declared">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22A699" alt="MIT License"></a>
 </p>
 
 > [!CAUTION]
@@ -30,7 +30,7 @@
 
 ## Overview
 
-Parchment brings standardized handwriting/touch tasks, high-density Apple Pencil sampling, on-device machine learning, and auditable research exports into one iPad app. Researchers can create pseudonymous participant records, run a quick or full protocol, preserve raw trajectories and features, execute bundled Core ML models, and optionally add multimodal analysis through an OpenAI-compatible API.
+neurotrace brings standardized handwriting/touch tasks, high-density Apple Pencil sampling, on-device machine learning, and auditable research exports into one iPad app. Researchers can create pseudonymous participant records, run a quick or full protocol, preserve raw trajectories and features, execute bundled Core ML models, and optionally add multimodal analysis through an OpenAI-compatible API.
 
 The project focuses on dynamic information that conventional paper tests do not retain: writing velocity and acceleration, pauses, curvature, pressure variation, pencil attitude, spectral energy, tapping rhythm, and inter-hand differences. These signals can support research into Parkinson-related motor features such as tremor, bradykinesia, rhythm instability, and micrographia.
 
@@ -91,7 +91,7 @@ The general `FeatureEngine` uses a nominal 120 Hz rate to compute duration, path
 | `ParkinsonSpiralXGBV2` | Paired static + dynamic spirals, 28 features | 80-tree XGBoost, threshold 0.45 | 40-subject LOSO: ROC AUC 0.875, balanced accuracy 0.807 | 15 controls / 25 PWP; threshold developed on the same small cohort; no external validation |
 | `ParkinsonXGBoostV2AllCommon` | Paired static + dynamic spirals, 72 features | 180-tree XGBoost, threshold 0.50 | 77-subject internal result: ROC AUC 0.949, balanced accuracy 0.834 | Imbalanced cohort and acquisition-batch confounding; training model is not iPad-compatible |
 
-The pressure model's training `Z` channel is not available from Apple Pencil. The app currently substitutes `normalizedForce × 1023 × sin(altitudeAngle)` as a vertical-pressure proxy. It is **not the original digitizer Z channel**, so cross-device interpretation requires particular care. See the [spiral model card](螺旋interface/docs/MODEL_CARD_V2.md) and [pressure-model input specification](压力interface/INPUT_SPEC.md) for details.
+The pressure model's training `Z` channel is not available from Apple Pencil. The app currently substitutes `normalizedForce × 1023 × sin(altitudeAngle)` as a vertical-pressure proxy. It is **not the original digitizer Z channel**, so cross-device interpretation requires particular care. See the [spiral model card](neurotrace-models/spiral/docs/MODEL_CARD_V2.md) and [pressure-model input specification](neurotrace-models/pressure/INPUT_SPEC.md) for details.
 
 These figures are internal development estimates; they do not establish performance in real-world, early-stage, or undiagnosed populations. The project description states that training uses public research data, but the repository does not yet provide auditable dataset names, DOI/URLs, or licenses. Add provenance and usage rights before publishing study results.
 
@@ -124,10 +124,10 @@ Exports contain participant codes, demographic fields, and high-density behavior
 | Optional cloud analysis | Foundation Networking, OpenAI-compatible Chat Completions |
 | Security | iOS Keychain, file protection, local-first defaults |
 | Export | Codable, ZIPFoundation 0.9.20, CSV/JSON/PNG/Markdown |
-| Modularity | Local `ParchmentKit` package: Domain / Application / Infrastructure / UIKit |
+| Modularity | Local `NeuroTraceKit` package (`neurotrace-kit/`): Domain / Application / Infrastructure / UIKit |
 | Tests | XCTest, unit tests, UI tests, and model contract tests |
 
-The core dependency direction is `ParchmentDomain → ParchmentApplication → ParchmentInfrastructure / ParchmentUIKit`. Domain and Application do not import UIKit; the UIKit package product does not directly import SwiftData, Core ML, or networking. This keeps infrastructure replaceable and boundaries independently testable.
+The core dependency direction is `NeuroTraceDomain → NeuroTraceApplication → NeuroTraceInfrastructure / NeuroTraceUIKit`. Domain and Application do not import UIKit; the UIKit package product does not directly import SwiftData, Core ML, or networking. This keeps infrastructure replaceable and boundaries independently testable.
 
 ## Getting started
 
@@ -145,17 +145,17 @@ The Mac Catalyst build is suitable for UI previews and workflow demonstrations; 
 ```bash
 git clone https://github.com/chiang881/neurotrace-ipad.git
 cd neurotrace-ipad
-open NT_UI.xcodeproj
+open neurotrace.xcodeproj
 ```
 
-In Xcode, select the `NT_UI` scheme, configure your Development Team, and run on iPad. Swift Package dependencies resolve from `Package.resolved`, and the two required V2 `.mlmodel` files are already included in the app target.
+In Xcode, select the `neurotrace` scheme, configure your Development Team, and run on iPad. Swift Package dependencies resolve from `Package.resolved`, and the two required V2 `.mlmodel` files are already included in the app target.
 
 To build for the simulator from an Apple Silicon Mac:
 
 ```bash
 xcodebuild build \
-  -project NT_UI.xcodeproj \
-  -scheme NT_UI \
+  -project neurotrace.xcodeproj \
+  -scheme neurotrace \
   -destination 'generic/platform=iOS Simulator' \
   ARCHS=arm64 \
   ONLY_ACTIVE_ARCH=YES \
@@ -167,13 +167,13 @@ An Apple Silicon Mac preview is available from [Releases](https://github.com/chi
 ### Tests
 
 ```bash
-# ParchmentKit boundary and use-case tests
-swift test --package-path ParchmentKit
+# NeuroTraceKit boundary and use-case tests
+swift test --package-path neurotrace-kit
 
 # App unit/UI tests: replace the placeholder with a locally available iPad simulator
 xcodebuild test \
-  -project NT_UI.xcodeproj \
-  -scheme NT_UI \
+  -project neurotrace.xcodeproj \
+  -scheme neurotrace \
   -destination 'platform=iOS Simulator,name=<iPad Simulator>' \
   CODE_SIGNING_ALLOWED=NO
 ```
@@ -182,7 +182,7 @@ xcodebuild test \
 
 ```text
 neurotrace-ipad/
-├── NT_UI/                         # iPad / Mac Catalyst app
+├── neurotrace/                    # iPad / Mac Catalyst app
 │   ├── Application/               # Application boundary protocols
 │   ├── Domain/                    # Subject, session, capture, and analysis models
 │   ├── Infrastructure/            # SwiftData, dependency assembly, secure storage
@@ -190,11 +190,11 @@ neurotrace-ipad/
 │   ├── Models/                    # Core ML models and local feature extractors
 │   ├── Services/                  # Features, analysis, export, and networking
 │   └── UIKit/                     # Screens and coordinator
-├── ParchmentKit/                  # Local Swift package for replaceable boundaries
-├── NT_UITests/                    # Unit and model-contract tests
-├── NT_UIUITests/                  # UI and recovery-flow tests
-├── 螺旋interface/                 # 28-feature spiral model interface and card
-└── 压力interface/                 # 72-feature pressure model contracts and metrics
+├── neurotrace-kit/                # Local Swift package for replaceable boundaries
+├── neurotrace-models/             # Spiral/pressure interfaces, contracts, and model cards
+├── neurotrace-tools/              # Reproducible brand-asset tooling
+├── neurotraceTests/               # Unit and model-contract tests
+└── neurotraceUITests/             # UI and recovery-flow tests
 ```
 
 ## Research and product roadmap
@@ -213,7 +213,7 @@ Issues and pull requests are welcome. If you change a capture protocol, feature 
 
 ## License
 
-No open-source license has been declared yet. Until a license file is added, the source code and models do not automatically grant permission to copy, modify, or redistribute them. Contact the repository maintainer about research collaboration or reuse.
+This project is released under the [MIT License](LICENSE). Third-party data and dependencies remain subject to their respective licenses. Research or medical use still requires independent ethics, privacy, regulatory, and validity review.
 
 ## Acknowledgements
 
